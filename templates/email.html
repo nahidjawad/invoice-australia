@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Invoice Preview{% endblock %}
+
+
+{% block content %}
+ <div class="container mt-5">
+    <div class="mb-3">
+      <a href="/" class="btn btn-secondary mb-3">← Create New Invoice</a>
+    </div>
+    <h2 class="mb-4">Email Sent!</h2>
+    <p>Invoiced email successfully to {{ data.client_email }}</p>
+  </div>
+{% endblock %}
