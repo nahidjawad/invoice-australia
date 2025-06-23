@@ -81,18 +81,15 @@
 <body>
   <h1 class="text-center mb-4">Tax Invoice</h1>
 
-<table class="invoice-header-table" style="width: 100%; margin-bottom: 2rem;">
+<table style="width: 100%; margin-bottom: 2rem; table-layout: fixed; border-collapse: collapse;">
   <tr>
-    <!-- Your Info -->
-    <td style="vertical-align: top; width: 50%;">
+    <td style="width: 50%; vertical-align: top;">
       <p><strong>{{ data.your_name }}</strong></p>
       <p>ABN: {{ data.abn }}</p>
       <p>Invoice #: {{ data.invoice_number }}</p>
       <p>Date of Issue: {{ data.formatted_date }}</p>
     </td>
-
-    <!-- Bill To -->
-    <td style="vertical-align: top; text-align: right; width: 50%;">
+    <td style="width: 50%; vertical-align: top; text-align: right;">
       <p><strong>Bill To:</strong></p>
       <p>{{ data.client_name }}</p>
       <p>Email: {{ data.client_email }}</p>
