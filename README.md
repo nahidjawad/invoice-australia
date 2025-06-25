@@ -97,7 +97,7 @@ This app uses Gmail SMTP. Make sure:
 - You enable "App Passwords" in your Google Account.
 - You add the `MAIL_USERNAME` and `MAIL_PASSWORD` correctly in `.env`.
 
-## ✅ Testing (To be implemented)
+## ✅ Testing
 
 To test, run the following
 
