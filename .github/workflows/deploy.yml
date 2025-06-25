@@ -44,7 +44,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /var/www/invoice-australia
-            git pull origin main
+            git pull origin master
 
       - name: 🔁 Restart app via SSH
         if: success()
