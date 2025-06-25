@@ -2,7 +2,8 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]  # or change to your default branch
+    branches: 
+      - main
 
 jobs:
   build-and-deploy:
