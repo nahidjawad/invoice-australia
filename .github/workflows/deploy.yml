@@ -36,8 +36,10 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "."
-          target: "/var/www/invoice-australia"
+          script: |
+            cd /var/www/invoice-australia
+            git pull origin main
+
 
       - name: 🔁 Restart app via SSH
         if: success()
