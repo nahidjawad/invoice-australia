@@ -40,7 +40,6 @@ jobs:
             cd /var/www/invoice-australia
             git pull origin main
 
-
       - name: 🔁 Restart app via SSH
         if: success()
         uses: appleboy/ssh-action@master
