@@ -99,7 +99,11 @@ This app uses Gmail SMTP. Make sure:
 
 ## ✅ Testing (To be implemented)
 
-Unit tests will be added in the next phase for CI/CD compatibility.
+To test, run the following
+
+```bash
+pytest
+```
 
 ## 📆 Deployment Plan
 
