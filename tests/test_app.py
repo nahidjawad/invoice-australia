@@ -83,5 +83,5 @@ def test_email_route(client):
             follow_redirects=True
         )
         assert response.status_code == 200
-        assert b"Invoiced email successfully" in response.data
+        assert b"Invoice emailed successfully" in response.data
         mock_send.assert_called_once()
