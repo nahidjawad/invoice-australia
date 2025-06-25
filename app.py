@@ -89,6 +89,10 @@ def download():
     filename = f"{name_slug}-{timestamp}.pdf"
     pdf_path = os.path.join('output', filename)
 
+    output_dir = 'output'
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     pdfkit.from_string(html, pdf_path)
     return send_file(pdf_path, as_attachment=True, download_name=filename)
 
