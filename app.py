@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, send_file, session, redirect, url_for
+from flask_dance.contrib.google import make_google_blueprint, google
 import pdfkit, os
 from flask_mail import Mail, Message
 import re
@@ -23,11 +24,17 @@ app.secret_key = os.environ.get("SECRET_KEY", os.urandom(24))
 mail = Mail(app)
 
 @app.context_processor
+def inject_user():
+    return dict(current_user=session.get("user"))
+@app.context_processor
 def inject_year():
     return {'year': datetime.now().year}
 
+
+
 @app.route('/')
 def form():
+    print("Session contents:", session)
     return render_template('form.html')
 
 @app.route('/invoice_preview')
@@ -128,6 +135,45 @@ def about():
 @app.route('/contact')
 def contact():
     return render_template('contact.html')
+
+# Google OAuth blueprint
+google_bp = make_google_blueprint(
+    client_id=os.getenv("GOOGLE_OAUTH_CLIENT_ID"),
+    client_secret=os.getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
+    scope=[
+        "https://www.googleapis.com/auth/userinfo.profile",
+        "https://www.googleapis.com/auth/userinfo.email",
+        "openid"
+    ],
+    redirect_to="google_login_complete",  # optional: define where to go after login
+)
+app.register_blueprint(google_bp, url_prefix="/login")
+
+@app.route("/google_login_complete")
+def google_login_complete():
+    if not google.authorized:
+        return redirect(url_for("google.login"))
+
+    resp = google.get("/oauth2/v2/userinfo")
+    if not resp.ok:
+        return "Failed to fetch user info", 400
+
+    user_info = resp.json()
+
+    # ✅ This is the key change
+    session["user"] = {
+        "name": user_info.get("name", "User"),
+        "email": user_info.get("email")
+    }
+
+    return redirect(url_for("form"))
+
+
+
+@app.route("/logout")
+def logout():
+    session.pop("user", None)
+    return redirect(url_for("form"))
 
 
 if __name__ == '__main__':
