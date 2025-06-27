@@ -11,3 +11,6 @@ pytest==7.0.1
 pytest-flask==1.2.0
 Flask-Dance[google]
 oauthlib
+SQLAlchemy==1.4.49
+Flask-SQLAlchemy==2.5.1
+

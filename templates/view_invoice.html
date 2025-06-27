@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-3">
+  <a href="/history" class="btn btn-secondary mb-3">← History</a>
+</div>
+<div class="container-sm text-dark-emphasis">
+  <h1 class="text-center mb-4">Tax Invoice</h1>
+
+  <div style="display: table; width: 100%; margin-bottom: 2rem;">
+  <div style="display: table-row;">
+    <!-- Left column -->
+    <div style="display: table-cell; width: 50%; vertical-align: top;">
+      <p>Invoice: {{ invoice_data.invoice_number }}</p>
+      <p>Date of Issue: {{ invoice_data.formatted_date }}</p>
+    </div>
+
+    <!-- Right column -->
+    <div style="display: table-cell; width: 50%; vertical-align: top; text-align: right;">
+      <strong>Customer Name:</strong>
+      <p>{{ invoice_data.client_name }}</p>
+    </div>
+  </div>
+  </div>
+  <table class="table table-bordered table-light table-hover">
+  <thead>
+    <tr>
+      <th>Description</th>
+      <th>Quantity</th>
+      <th>Rate (AUD)</th>
+      <th>Total (AUD)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{ invoice_data.description }}</td>
+      <td>{{ invoice_data.quantity }}</td>
+      <td>${{ "{:,.2f}".format(invoice_data.rate|float) }}</td>
+      <td>${{ "{:,.2f}".format(invoice_data.total|float) }}</td>
+    </tr>
+  </tbody>
+  </table>
+  {% if invoice_data.include_gst %}
+  <small class="text-body-secondary fst-italic">Total amount includes 10% GST</small>
+  {% endif %}
+  <div class="totals ">
+    <table class="table table-bordered table-light table-hover">
+      <tr class="text-end">
+        <td><strong>Grand Total (AUD)</strong></td>
+        <td><strong>${{ "{:,.2f}".format(invoice_data.total|float) }}</strong></td>
+      </tr>
+    </table>
+  </div>
+  <div class="d-flex justify-content-center">
+    <!-- Editable Email -->
+    <form id="invoice-actions-form" method="POST">
+  <div class="mb-3">
+    <label>Email</label>
+    <input type="email" name="client_email" class="form-control" value="{{ invoice_data.client_email }}" required>
+  </div>
+
+  <!-- Hidden fields with invoice data -->
+  {% for key, value in invoice_data.items() %}
+    {% if key != 'client_email' %}
+      <input type="hidden" name="{{ key }}" value="{{ value }}">
+    {% endif %}
+  {% endfor %}
+  <input type="hidden" name="review" value="true">
+  <!-- Buttons -->
+  <button type="submit" formaction="{{ url_for('download') }}" class="btn btn-success">Download PDF</button>
+  <button type="submit" formaction="{{ url_for('email_invoice') }}" class="btn btn-primary">Resend Email</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

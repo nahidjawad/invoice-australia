@@ -45,6 +45,9 @@ jobs:
           script: |
             cd /var/www/invoice-australia
             git pull origin master
+            source venv/bin/activate
+            pip install -r requirements.txt
+            python -c "from app import db; db.create_all()"
 
       - name: 🔁 Restart app via SSH
         if: success()

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Your Invoice History</h2>
+<div class="row">
+  {% for invoice in invoices %}
+    <div class="col-md-4">
+      <div class="card mb-4 shadow">
+        <div class="card-header">{{ invoice.data.client_name }}</div>
+        <div class="card-body">
+          <p class="card-text"><strong>Description:</strong> {{ invoice.data.description }}</p>
+          <p class="card-text"><strong>Email:</strong> {{ invoice.data.client_email }}</p>
+          <p class="card-text"><strong>Total:</strong> ${{ "%.2f"|format(invoice.data.total) }}</p>
+          <a href="{{ url_for('view_invoice', invoice_id=invoice.id) }}" class="btn btn-outline-primary btn-sm">View</a>
+        </div>
+        <div class="card-footer">
+          <small class="text-body-secondary">Created on {{ invoice.created_at.strftime('%d %b %Y') }}</small>
+          <small class="float-end text-body-secondary">Invoice no <span class="badge text-bg-secondary">{{ invoice.id }}</span></small>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
