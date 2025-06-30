@@ -42,9 +42,7 @@ instance/
 backup_*.db
 
 # Output files
-output/
-*.pdf
-*.html
+output/*.pdf
 
 # IDE
 .vscode/
