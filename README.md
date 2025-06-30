@@ -1,127 +1,166 @@
 # Invoice Australia
 
-**Create and send tax invoices in seconds.**
-
-Invoice Australia is a lightweight web application that helps individuals and small businesses generate and send tax invoices easily. It supports PDF generation, email delivery, GST calculation, and mobile responsiveness.
+A modern, Flask-based invoice generation application with Google OAuth authentication and premium features.
 
 ## 🚀 Features
 
-- Create tax invoices with client details, quantity, rate, and GST
-- Preview and download PDF invoices
-- Email invoices to clients
-- Fully mobile-responsive design
-- Deployed via Flask and PDFKit
+- **Invoice Generation**: Create professional PDF invoices
+- **Google OAuth**: Secure authentication with Google accounts
+- **Premium Features**: Invoice history and management for premium users
+- **Email Integration**: Send invoices directly to clients
+- **Modern UI**: Clean, responsive Bootstrap-based interface
 
----
-
-## 🛠 Installation (CentOS 7)
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/your-username/invoice-australia.git
-cd invoice-australia
-```
-
-### 2. Install System Dependencies
-
-```bash
-yum update -y
-yum install -y epel-release
-yum install -y python3 python3-venv python3-pip nginx wkhtmltopdf
-```
-
-> ⚠️ If `wkhtmltopdf` is not available in your repo, download the CentOS RPM from: [https://github.com/wkhtmltopdf/wkhtmltopdf/releases](https://github.com/wkhtmltopdf/wkhtmltopdf/releases)
-
-### 3. Set up Python Environment
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-### 4. Configure Environment Variables
-
-Create a `.env` file in the root directory:
+## 📁 Project Structure
 
 ```
-MAIL_USERNAME=your_email@example.com
-MAIL_PASSWORD=your_email_app_password
-SECRET_KEY=your_random_secret_key
+invoice-australia/
+├── app_refactored.py      # Main application factory
+├── config.py              # Configuration settings
+├── extensions.py          # Flask extensions (SQLAlchemy, Mail)
+├── models.py              # Database models (User, Invoice)
+├── routes.py              # Application routes and views
+├── auth.py                # Authentication and OAuth logic
+├── utils.py               # Utility functions and helpers
+├── run_dev.py             # Development server runner
+├── requirements.txt       # Python dependencies
+├── pyproject.toml         # Project metadata
+├── setup.cfg              # Pytest configuration
+├── .env                   # Environment variables (create from .env.template)
+├── .gitignore             # Git ignore rules
+├── README.md              # This file
+├── templates/             # Jinja2 HTML templates
+├── static/                # Static files (CSS, JS, images)
+├── instance/              # Instance-specific files (database)
+├── tests/                 # Test suite
+└── output/                # Generated PDF invoices
 ```
 
-### 5. Run the App
+## 🛠️ Setup & Installation
 
-```bash
-gunicorn -w 2 -b 127.0.0.1:5000 app:app
+### Prerequisites
+- Python 3.8+
+- Google OAuth credentials
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd invoice-australia
+   ```
+
+2. **Create virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Set up environment variables**
+   ```bash
+   cp .env.template .env
+   # Edit .env with your actual values
+   ```
+
+5. **Run the application**
+   ```bash
+   python run_dev.py
+   ```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Create a `.env` file with the following variables:
+
+```env
+# Email Configuration
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=your-app-password
+
+# Security
+SECRET_KEY=your-secret-key
+
+# Google OAuth
+GOOGLE_OAUTH_CLIENT_ID=your-client-id
+GOOGLE_OAUTH_CLIENT_SECRET=your-client-secret
+
+# Application Environment
+FLASK_ENV=development
+OAUTHLIB_INSECURE_TRANSPORT=1
+OAUTHLIB_RELAX_TOKEN_SCOPE=1
 ```
 
-## 🌐 NGINX Reverse Proxy (Optional)
+## 🧪 Testing
 
-To serve the app publicly via a subdomain (e.g., `invoice.example.com`), configure NGINX:
-
-```nginx
-server {
-    listen 80;
-    server_name invoice.example.com;
-
-    location / {
-        proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    location /static/ {
-        proxy_pass http://127.0.0.1:5000/static/;
-        proxy_buffering off;
-        proxy_set_header Host $host;
-    }
-}
-```
-
-Then reload NGINX:
-
-```bash
-sudo nginx -t
-sudo systemctl reload nginx
-```
-
-## 📧 Email Sending Setup
-
-This app uses Gmail SMTP. Make sure:
-
-- You enable "App Passwords" in your Google Account.
-- You add the `MAIL_USERNAME` and `MAIL_PASSWORD` correctly in `.env`.
-
-## ✅ Testing
-
-To test, run the following
+Run the test suite:
 
 ```bash
 pytest
 ```
 
-## 📆 Deployment Plan
+Run tests with coverage:
 
-This app is built to support:
+```bash
+pytest --cov=.
+```
 
-- Automated testing
-- CI/CD with GitHub Actions
-- Deployment to an EC2 instance
+## 📝 Usage
 
-Stay tuned for updates.
+1. **Access the application** at `http://localhost:5000`
+2. **Sign in** with your Google account
+3. **Create invoices** using the form
+4. **Download or email** invoices to clients
+5. **View history** (premium feature)
 
----
+## 🏗️ Architecture
+
+- **Flask Blueprints**: Modular route organization
+- **SQLAlchemy**: Database ORM with SQLite
+- **Flask-Mail**: Email functionality
+- **Google OAuth**: Authentication system
+- **Bootstrap**: Frontend framework
+
+## 🔒 Security Features
+
+- OAuth 2.0 authentication
+- CSRF protection
+- Input validation
+- Secure session management
+- Environment variable configuration
+
+## 📊 Database Schema
+
+### Users Table
+- `id`: Primary key
+- `email`: User email (unique)
+- `name`: User display name
+- `is_premium`: Premium status
+- `created_at`: Account creation timestamp
+
+### Invoices Table
+- `id`: Primary key
+- `user_id`: Foreign key to users
+- `data`: JSON invoice data
+- `created_at`: Invoice creation timestamp
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
 
 ## 📄 License
 
-MIT License
+This project is licensed under the MIT License.
 
-## ✨ Author
+## 🆘 Support
 
-Developed by Nahid Jawad
+For support, please open an issue in the GitHub repository.
 

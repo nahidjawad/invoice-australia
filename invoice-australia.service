@@ -1,0 +1,20 @@
+[Unit]
+Description=Invoice Australia Flask Application
+After=network.target
+
+[Service]
+Type=notify
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/invoice-australia
+Environment="PATH=/home/ubuntu/invoice-australia/venv/bin"
+Environment="FLASK_ENV=production"
+ExecStart=/home/ubuntu/invoice-australia/venv/bin/gunicorn --config gunicorn.conf.py app_refactored:app
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+Restart=always
+
+[Install]
+WantedBy=multi-user.target 
