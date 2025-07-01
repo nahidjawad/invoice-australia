@@ -1,4 +1,5 @@
 import os
+from werkzeug.middleware.proxy_fix import ProxyFix  # Added for production reverse proxy support
 
 # Set OAuth environment variables for development before any other imports
 if os.environ.get('FLASK_ENV') == 'development' or not os.environ.get('FLASK_ENV'):
@@ -66,6 +67,10 @@ def create_app(config_name=None):
 
 # Create the application instance
 app = create_app()
+
+# Apply ProxyFix only in production to handle reverse proxy headers (e.g., X-Forwarded-Proto, X-Forwarded-Host)
+if os.environ.get('FLASK_ENV') == 'production':
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 if __name__ == '__main__':
     app.run(debug=app.config.get('DEBUG', False)) 
