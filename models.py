@@ -36,6 +36,7 @@ class Invoice(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     data = db.Column(db.Text, nullable=False)  # Store as text to handle existing JSON strings
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(20), default='Unpaid')
     
     @property
     def invoice_data(self):

@@ -230,6 +230,19 @@ def buy_premium():
     
     return redirect(url_for('invoice.history'))
 
+@invoice.route('/mark_paid/<int:invoice_id>', methods=['POST'])
+def mark_paid(invoice_id):
+    """Mark an invoice as paid."""
+    if not SessionManager.is_authenticated():
+        return redirect(url_for('auth.login'))
+    invoice = Invoice.query.get_or_404(invoice_id)
+    if invoice.user_id != session["user"]["id"]:
+        abort(403, description="Unauthorized access to invoice")
+    invoice.status = 'Paid'
+    db.session.commit()
+    flash('Invoice marked as paid.', 'success')
+    return redirect(url_for('invoice.history'))
+
 # Stripe routes
 @stripe_bp.route('/create-checkout-session', methods=['POST'])
 def create_checkout():

@@ -12,7 +12,13 @@
             <p class="card-text"><strong>Description:</strong> {{ invoice.invoice_data.description }}</p>
             <p class="card-text"><strong>Email:</strong> {{ invoice.invoice_data.client_email }}</p>
             <p class="card-text"><strong>Total:</strong> ${{ "%.2f"|format(invoice.invoice_data.total) }}</p>
+            <p class="card-text"><strong>Status:</strong> <span class="badge {% if invoice.status == 'Paid' %}bg-success{% else %}bg-warning text-dark{% endif %}">{{ invoice.status }}</span></p>
             <a href="{{ url_for('invoice.view_invoice', invoice_id=invoice.id) }}" class="btn btn-outline-primary btn-sm">View</a>
+            {% if invoice.status != 'Paid' %}
+            <form method="post" action="{{ url_for('invoice.mark_paid', invoice_id=invoice.id) }}" style="display:inline;">
+              <button type="submit" class="btn btn-success btn-sm ms-2">Mark as Paid</button>
+            </form>
+            {% endif %}
           </div>
           <div class="card-footer">
             <small class="text-body-secondary">Created on {{ invoice.created_at.strftime('%d %b %Y') }}</small>
