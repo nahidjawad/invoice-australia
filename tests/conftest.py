@@ -7,10 +7,13 @@ import json
 from datetime import datetime
 from unittest.mock import patch, MagicMock
 import uuid
+import os
 
 from app_refactored import create_app
 from models import db, User, Invoice
 from extensions import init_extensions
+
+os.makedirs('instance', exist_ok=True)
 
 
 @pytest.fixture(scope='session')
