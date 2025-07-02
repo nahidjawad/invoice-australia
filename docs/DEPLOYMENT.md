@@ -35,7 +35,7 @@ pip install -r requirements.txt
 ```bash
 mkdir -p instance
 python
->>> from app_refactored import create_app
+>>> from app import create_app
 >>> app = create_app('production')
 >>> from extensions import db
 >>> with app.app_context():
@@ -46,7 +46,7 @@ python
 ## 5. Run with Gunicorn (Production WSGI)
 ```bash
 source venv/bin/activate
-gunicorn -w 3 -b 0.0.0.0:8000 app_refactored:create_app()
+gunicorn -w 3 -b 0.0.0.0:8000 app:create_app()
 ```
 
 ## 6. [Optional] Nginx Reverse Proxy

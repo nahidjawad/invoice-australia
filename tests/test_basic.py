@@ -9,7 +9,7 @@ import sys
 def test_app_import():
     """Test that the refactored app can be imported"""
     try:
-        from app_refactored import create_app
+        from app import create_app
         assert create_app is not None
     except ImportError as e:
         pytest.fail(f"Failed to import create_app: {e}")
@@ -17,7 +17,7 @@ def test_app_import():
 def test_app_creation():
     """Test that the app can be created"""
     try:
-        from app_refactored import create_app
+        from app import create_app
         app = create_app('testing')
         assert app is not None
         assert app.config['TESTING'] is True

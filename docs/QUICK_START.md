@@ -102,7 +102,7 @@ python -m pytest --cov=.
 ### Project Structure
 ```
 invoice-australia/
-├── app_refactored.py      # Application factory
+├── app.py      # Application factory
 ├── config.py              # Configuration settings
 ├── models.py              # Database models
 ├── routes.py              # Route handlers

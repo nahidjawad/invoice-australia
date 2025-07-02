@@ -72,7 +72,7 @@ The fixes have been verified with:
 
 ## 🚀 **Next Steps**
 
-1. **Run the application**: `python app_refactored.py`
+1. **Run the application**: `python app.py`
 2. **Test the homepage**: Visit `http://localhost:5000`
 3. **Test invoice creation**: Fill out the form and test the workflow
 4. **Test authentication**: Try the Google OAuth login

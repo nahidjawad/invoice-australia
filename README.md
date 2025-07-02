@@ -14,7 +14,7 @@ A modern, Flask-based invoice generation application with Google OAuth authentic
 
 ```
 invoice-australia/
-├── app_refactored.py      # Main application factory
+├── app.py      # Main application factory
 ├── config.py              # Configuration settings
 ├── extensions.py          # Flask extensions (SQLAlchemy, Mail)
 ├── models.py              # Database models (User, Invoice)

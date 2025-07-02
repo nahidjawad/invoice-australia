@@ -9,7 +9,7 @@ from unittest.mock import patch, MagicMock
 import uuid
 import os
 
-from app_refactored import create_app
+from app import create_app
 from models import db, User, Invoice
 from extensions import init_extensions
 

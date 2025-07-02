@@ -6,7 +6,7 @@ This document outlines the major improvements and best practices implemented in 
 
 ### 1. **Application Factory Pattern**
 - **Before**: Single `app.py` file with global app instance
-- **After**: `create_app()` factory function in `app_refactored.py`
+- **After**: `create_app()` factory function in `app.py`
 - **Benefits**: 
   - Better testing isolation
   - Multiple configuration support
@@ -118,7 +118,7 @@ This document outlines the major improvements and best practices implemented in 
 ```
 invoice-australia/
 ├── app.py                    # Original application (keep for reference)
-├── app_refactored.py         # New refactored application
+├── app.py         # New refactored application
 ├── config.py                 # Configuration management
 ├── models.py                 # Database models
 ├── utils.py                  # Business logic utilities
@@ -147,7 +147,7 @@ pip install -r requirements.txt
 pytest tests/test_refactored.py
 
 # Start the refactored application
-python app_refactored.py
+python app.py
 ```
 
 ### 2. **Database Migration**
