@@ -20,6 +20,7 @@ os.makedirs('instance', exist_ok=True)
 def app():
     """Create application for testing"""
     app = create_app('testing')
+    print("TEST DB URI:", app.config['SQLALCHEMY_DATABASE_URI'])
     return app
 
 
