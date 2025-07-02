@@ -31,6 +31,9 @@ jobs:
           pip install -r requirements.txt
 
       - name: 🧪 Run tests
+        env:
+          FLASK_ENV: testing
+          DATABASE_URL: ""
         run: |
           source venv/bin/activate
           pytest tests/
