@@ -3,30 +3,42 @@
 <h2>Your Invoice History</h2>
 
 {% if invoices %}
-  <div class="row">
-    {% for invoice in invoices %}
-      <div class="col-md-4">
-        <div class="card mb-4 shadow">
-          <div class="card-header">{{ invoice.invoice_data.client_name }}</div>
-          <div class="card-body">
-            <p class="card-text"><strong>Description:</strong> {{ invoice.invoice_data.description }}</p>
-            <p class="card-text"><strong>Email:</strong> {{ invoice.invoice_data.client_email }}</p>
-            <p class="card-text"><strong>Total:</strong> ${{ "%.2f"|format(invoice.invoice_data.total) }}</p>
-            <p class="card-text"><strong>Status:</strong> <span class="badge {% if invoice.status == 'Paid' %}bg-success{% else %}bg-warning text-dark{% endif %}">{{ invoice.status }}</span></p>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Invoice #</th>
+          <th>Client</th>
+          <th>Description</th>
+          <th>Email</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for invoice in invoices %}
+        <tr style="cursor:pointer;" onclick="window.location='{{ url_for('invoice.view_invoice', invoice_id=invoice.id) }}'">
+          <td>{{ invoice.id }}</td>
+          <td>{{ invoice.invoice_data.client_name }}</td>
+          <td>{{ invoice.invoice_data.description }}</td>
+          <td>{{ invoice.invoice_data.client_email }}</td>
+          <td>${{ "%.2f"|format(invoice.invoice_data.total) }}</td>
+          <td><span class="badge {% if invoice.status == 'Paid' %}bg-success{% else %}bg-warning text-dark{% endif %}">{{ invoice.status }}</span></td>
+          <td>{{ invoice.created_at.strftime('%d %b %Y') }}</td>
+          <td>
             <a href="{{ url_for('invoice.view_invoice', invoice_id=invoice.id) }}" class="btn btn-outline-primary btn-sm">View</a>
             {% if invoice.status != 'Paid' %}
-            <form method="post" action="{{ url_for('invoice.mark_paid', invoice_id=invoice.id) }}" style="display:inline;">
+            <form method="post" action="{{ url_for('invoice.mark_paid', invoice_id=invoice.id) }}" style="display:inline;" onclick="event.stopPropagation();">
               <button type="submit" class="btn btn-success btn-sm ms-2">Mark as Paid</button>
             </form>
             {% endif %}
-          </div>
-          <div class="card-footer">
-            <small class="text-body-secondary">Created on {{ invoice.created_at.strftime('%d %b %Y') }}</small>
-            <small class="float-end text-body-secondary">Invoice no <span class="badge text-bg-secondary">{{ invoice.id }}</span></small>
-          </div>
-        </div>
-      </div>
-    {% endfor %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 {% else %}
   <div class="text-center py-5">
