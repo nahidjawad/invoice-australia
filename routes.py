@@ -3,6 +3,7 @@ from flask_mail import Message
 from werkzeug.exceptions import BadRequest, Unauthorized
 import json
 from datetime import datetime
+import hashlib
 
 from models import User, Invoice
 from utils import InvoiceProcessor, SessionManager, EmailValidator
@@ -69,6 +70,23 @@ def edit():
         return redirect(url_for('main.form'))
     return render_template('form.html', data=data)
 
+def save_invoice_once(user_id, data):
+    """Save invoice to DB only if not already saved in session."""
+    invoice_str = json.dumps(data, sort_keys=True)
+    invoice_hash = hashlib.sha256(invoice_str.encode()).hexdigest()
+    if session.get('last_invoice_hash') != invoice_hash:
+        invoice_record = Invoice(
+            user_id=user_id,
+            data=data,
+        )
+        db.session.add(invoice_record)
+        db.session.commit()
+        session['last_invoice_hash'] = invoice_hash
+        session['last_invoice_id'] = invoice_record.id
+        current_app.logger.info(f"Invoice saved successfully with ID: {invoice_record.id}")
+    else:
+        current_app.logger.info("Invoice already saved for this data, skipping DB save.")
+
 @invoice.route('/download', methods=['POST'])
 def download():
     """Generate and download PDF invoice"""
@@ -89,16 +107,9 @@ def download():
         current_app.logger.info(f"Review field value: {data.get('review')}")
         current_app.logger.info(f"Should save to DB: {SessionManager.is_authenticated() and not data.get('review')}")
         
-        # Save to database if user is logged in
+        # Save to database if user is logged in and invoice not already saved
         if SessionManager.is_authenticated() and not data.get('review'):
-            current_app.logger.info(f"Saving invoice to database for user {session['user']['id']}")
-            invoice_record = Invoice(
-                user_id=session["user"]["id"],
-                data=data,
-            )
-            db.session.add(invoice_record)
-            db.session.commit()
-            current_app.logger.info(f"Invoice saved successfully with ID: {invoice_record.id}")
+            save_invoice_once(session["user"]["id"], data)
         else:
             current_app.logger.info("Invoice not saved to database (user not authenticated or review mode)")
         
@@ -139,16 +150,9 @@ def email_invoice():
         current_app.logger.info(f"Review field value: {data.get('review')}")
         current_app.logger.info(f"Should save to DB: {SessionManager.is_authenticated() and not data.get('review')}")
         
-        # Save to database if user is logged in
+        # Save to database if user is logged in and invoice not already saved
         if SessionManager.is_authenticated() and not data.get('review'):
-            current_app.logger.info(f"Saving invoice to database for user {session['user']['id']}")
-            invoice_record = Invoice(
-                user_id=session["user"]["id"],
-                data=data,
-            )
-            db.session.add(invoice_record)
-            db.session.commit()
-            current_app.logger.info(f"Invoice saved successfully with ID: {invoice_record.id}")
+            save_invoice_once(session["user"]["id"], data)
         else:
             current_app.logger.info("Invoice not saved to database (user not authenticated or review mode)")
         
