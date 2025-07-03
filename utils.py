@@ -53,12 +53,15 @@ class InvoiceProcessor:
     
     @staticmethod
     def create_pdf(html_content: str, filename: str) -> str:
+        import shutil
+        wkhtmltopdf_path = shutil.which('wkhtmltopdf') or '/usr/bin/wkhtmltopdf'
+        config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf_path)
         """Create PDF from HTML content"""
         os.makedirs('output', exist_ok=True)
         pdf_path = os.path.join('output', filename)
         
         try:
-            pdfkit.from_string(html_content, pdf_path)
+            pdfkit.from_string(html_content, pdf_path, configuration=config)
             return pdf_path
         except Exception as e:
             raise RuntimeError(f"Failed to create PDF: {e}")

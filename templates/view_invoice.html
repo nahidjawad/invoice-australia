@@ -16,8 +16,8 @@
 
     <!-- Right column -->
     <div style="display: table-cell; width: 50%; vertical-align: top; text-align: right;">
-      <strong>Customer Name:</strong>
-      <p>{{ invoice_data.client_name }}</p>
+      <p><strong>Customer Name: </strong>{{ invoice_data.client_name }}</p>
+      <p><strong>Status: </strong><span class="badge {% if invoice.status == 'Paid' %}bg-success{% else %}bg-warning text-dark{% endif %}">{{ invoice.status }}</span></p>
     </div>
   </div>
   </div>

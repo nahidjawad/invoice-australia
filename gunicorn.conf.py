@@ -2,7 +2,7 @@
 import multiprocessing
 
 # Server socket
-bind = "0.0.0.0:8000"
+bind = "127.0.0.1:5000"
 backlog = 2048
 
 # Worker processes
@@ -17,8 +17,8 @@ max_requests = 1000
 max_requests_jitter = 50
 
 # Logging
-accesslog = "-"
-errorlog = "-"
+accesslog = "/var/log/invoice-australia/access.log"
+errorlog = "/var/log/invoice-australia/error.log"
 loglevel = "info"
 
 # Process naming
