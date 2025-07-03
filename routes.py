@@ -197,9 +197,21 @@ def history():
         return redirect(url_for('main.premium'))
     
     invoices = user.invoices
+    # Adding total invoice data for users
+    total_invoices = len(invoices)
+    paid_invoices = sum(1 for inv in invoices if inv.status == 'Paid')
+    unpaid_invoices = total_invoices - paid_invoices
+    total_outstanding = sum(inv.invoice_data.get('total', 0) for inv in invoices if inv.status != 'Paid')
     current_app.logger.info(f"Found {len(invoices)} invoices for user")
     
-    return render_template("history.html", invoices=invoices)
+    return render_template(
+        "history.html", 
+        invoices=invoices,
+        total_invoices=total_invoices,
+        paid_invoices=paid_invoices,
+        unpaid_invoices=unpaid_invoices,
+        total_outstanding=total_outstanding
+    )
 
 @invoice.route("/<int:invoice_id>")
 def view_invoice(invoice_id):
