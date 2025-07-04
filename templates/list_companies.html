@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2>Your Companies</h2>
+  <a href="{{ url_for('company.create_company') }}" class="btn btn-primary mb-3">Create New Company</a>
+  {% if companies %}
+    <div class="row">
+      {% for company in companies %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <img src="{% if company.logo_path %}{{ url_for('static', filename=company.logo_path) }}{% else %}{{ url_for('static', filename='img/company-placeholder.png') }}{% endif %}"
+               class="card-img-top" alt="Logo" style="max-height:120px;object-fit:contain;">
+          <div class="card-body">
+            <h5 class="card-title">{{ company.company_name }}</h5>
+            <p class="card-text">
+              <strong>ABN:</strong> {{ company.abn or 'N/A' }}<br>
+              <strong>Address:</strong> {{ company.address or 'N/A' }}<br>
+              <strong>Phone:</strong> {{ company.phone or 'N/A' }}<br>
+              <strong>Email:</strong> {{ company.email or 'N/A' }}<br>
+              <strong>Payment Details:</strong> {{ company.payment_details or 'N/A' }}
+            </p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>You have not added any companies yet.</p>
+  {% endif %}
+</div>
+{% endblock %} 

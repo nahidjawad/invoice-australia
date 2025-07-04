@@ -15,6 +15,7 @@ main = Blueprint('main', __name__)
 auth = Blueprint('auth', __name__)
 invoice = Blueprint('invoice', __name__)
 stripe_bp = Blueprint('stripe', __name__)
+user = Blueprint('user', __name__)
 
 # Main routes
 @main.route('/')
@@ -38,6 +39,33 @@ def premium():
     if not SessionManager.is_authenticated():
         return redirect(url_for('auth.login'))
     return render_template('premium.html')
+
+@main.route('/contact/feedback', methods=['POST'])
+def contact_feedback():
+    data = request.get_json()
+    website = data.get('website', '')
+    if website:
+        # Honeypot triggered, treat as spam
+        return {'success': True, 'message': 'Thank you for your feedback!'}
+    feedback_type = data.get('type')
+    message = data.get('message')
+    name = data.get('name')
+    email = data.get('email')
+    if not feedback_type or not message or not email:
+        return {'success': False, 'message': 'All fields are required.'}, 400
+    try:
+        mail_msg = Message(
+            subject=f"[Feedback] {feedback_type.title()} from {name or 'Anonymous'}",
+            recipients=[current_app.config['FEEDBACK_RECIPIENT']],
+            sender=current_app.config['MAIL_DEFAULT_SENDER'],
+            reply_to=email
+        )
+        mail_msg.body = f"Type: {feedback_type}\nFrom: {name} <{email}>\n\nMessage:\n{message}"
+        mail.send(mail_msg)
+        return {'success': True, 'message': 'Thank you for your feedback!'}
+    except Exception as e:
+        current_app.logger.error(f"Feedback email failed: {str(e)}")
+        return {'success': False, 'message': 'Failed to send feedback. Please try again later.'}, 500
 
 # Invoice routes
 @invoice.route('/preview', methods=['POST'])

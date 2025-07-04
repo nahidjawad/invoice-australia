@@ -11,9 +11,12 @@ from datetime import datetime
 
 from config import config
 from extensions import init_extensions, db
+from flask_migrate import Migrate
 from models import User, Invoice
 from routes import main, invoice, stripe_bp
 from auth import auth
+from user import user 
+from company import company_bp  # <-- Add this import
 
 def create_app(config_name=None):
     """Application factory pattern"""
@@ -24,18 +27,16 @@ def create_app(config_name=None):
         config_name = os.environ.get('FLASK_ENV', 'default')
     app.config.from_object(config[config_name])
     
-    # Initialize extensions
-    init_extensions(app)
-    
-    # Create database tables
-    with app.app_context():
-        db.create_all()
-    
+    init_extensions(app)  # This calls db.init_app(app) and mail.init_app(app)
+    migrate = Migrate(app, db)  # Only once, after db is initialized
+
     # Register blueprints
     app.register_blueprint(main)
     app.register_blueprint(auth)
     app.register_blueprint(invoice, url_prefix='/invoice')
     app.register_blueprint(stripe_bp, url_prefix='/stripe')
+    app.register_blueprint(user) 
+    app.register_blueprint(company_bp)  # <-- Register the company blueprint
     
     # Context processors
     @app.context_processor

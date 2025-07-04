@@ -45,3 +45,6 @@ mypy==1.5.1
 # Security
 cryptography==41.0.4
 
+# DB migration
+Flask-Migrate>=3.0.0
+

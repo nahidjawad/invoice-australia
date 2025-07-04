@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2>Create Company</h2>
+  <form method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label>Company Name</label>
+      <input type="text" class="form-control" name="company_name" required>
+    </div>
+    <div class="mb-3">
+      <label>ABN</label>
+      <input type="text" class="form-control" name="abn">
+    </div>
+    <div class="mb-3">
+      <label>Address</label>
+      <input type="text" class="form-control" name="address">
+    </div>
+    <div class="mb-3">
+      <label>Phone</label>
+      <input type="text" class="form-control" name="phone">
+    </div>
+    <div class="mb-3">
+      <label>Email</label>
+      <input type="email" class="form-control" name="email">
+    </div>
+    <div class="mb-3">
+      <label>Payment Details</label>
+      <textarea class="form-control" name="payment_details"></textarea>
+    </div>
+    <div class="mb-3">
+      <label>Company Logo</label>
+      <input type="file" class="form-control" name="logo" accept="image/*">
+    </div>
+    <!-- Logo upload can be added here -->
+    <button type="submit" class="btn btn-primary">Create Company</button>
+  </form>
+</div>
+{% endblock %}

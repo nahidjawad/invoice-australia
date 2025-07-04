@@ -50,7 +50,8 @@ jobs:
             git pull origin master
             source venv/bin/activate
             pip install -r requirements.txt
-            python -c "from app import app, db; app.app_context().push(); db.create_all()"
+            export FLASK_APP=app.py
+            flask db upgrade
 
       - name: 🔁 Restart app via SSH
         if: success()

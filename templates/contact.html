@@ -1,6 +1,86 @@
 {% extends "base.html" %}
 {% block title %}Contact Us{% endblock %}
 {% block content %}
-  <h2>Contact Us</h2>
-  <p>Email: invoicesaustralia@gmail.com</p>
+<div class="container mt-5" id="contactContainer">
+  <h2>Contact / Feedback</h2>
+  <form id="feedbackForm">
+    <input type="text" name="website" id="website" style="display:none" tabindex="-1" autocomplete="off">
+    {% if current_user %}
+      <div class="mb-3">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{ current_user['name'] }}" disabled>
+      </div>
+      <div class="mb-3">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" id="email" name="email" value="{{ current_user['email'] }}" disabled>
+      </div>
+    {% else %}
+      <div class="mb-3">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+      </div>
+      <div class="mb-3">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" id="email" name="email" required>
+      </div>
+    {% endif %}
+    <div class="mb-3">
+      <select class="form-select" id="type" name="type" required>
+        <option value="">Select type</option>
+        <option value="Complaint">Complaint</option>
+        <option value="Feature Request">Feature Request</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="message">Message</label>
+      <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+    </div>
+    <button id="submitBtn" type="submit" class="btn btn-primary">
+      <span id="submitBtnText">Submit</span>
+      <span id="submitBtnSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+    </button>
+  </form>
+  <div id="feedbackMsg" class="mt-3"></div>
+</div>
+<script>
+document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const submitBtn = document.getElementById('submitBtn');
+  const submitBtnText = document.getElementById('submitBtnText');
+  const submitBtnSpinner = document.getElementById('submitBtnSpinner');
+  const msgDiv = document.getElementById('feedbackMsg');
+  submitBtn.disabled = true;
+  submitBtnText.textContent = 'Sending...';
+  submitBtnSpinner.classList.remove('d-none');
+  msgDiv.textContent = '';
+  msgDiv.className = 'mt-3';
+  const type = document.getElementById('type').value;
+  const name = document.getElementById('name') ? document.getElementById('name').value : '';
+  const email = document.getElementById('email') ? document.getElementById('email').value : '';
+  const message = document.getElementById('message').value;
+  const website = document.getElementById('website').value;
+  try {
+    const response = await fetch('/contact/feedback', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({type, name, email, message, website})
+    });
+    const result = await response.json();
+    if (result.success) {
+      document.getElementById('contactContainer').innerHTML = `<div class='alert alert-success text-center'>${result.message}</div>`;
+    } else {
+      msgDiv.textContent = result.message;
+      msgDiv.classList.add('text-danger');
+    }
+  } catch (err) {
+    msgDiv.textContent = 'An error occurred. Please try again.';
+    msgDiv.classList.add('text-danger');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtnText.textContent = 'Submit';
+    submitBtnSpinner.classList.add('d-none');
+  }
+});
+</script>
 {% endblock %}

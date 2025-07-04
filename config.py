@@ -34,6 +34,8 @@ class Config:
     # File upload configuration
     UPLOAD_FOLDER = 'output'
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
+    # Feedback email
+    FEEDBACK_RECIPIENT = os.environ.get('FEEDBACK_RECIPIENT', 'invoices.australia@gmail.com')
 
 class DevelopmentConfig(Config):
     """Development configuration"""
