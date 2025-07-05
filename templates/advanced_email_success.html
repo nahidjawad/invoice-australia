@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Email Sent Successfully{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body text-center">
+          <div class="mb-4">
+            <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+          </div>
+          
+          <h2 class="card-title text-success mb-3">Email Sent Successfully!</h2>
+          
+          <p class="card-text mb-4">
+            Your advanced invoice has been sent to <strong>{{ data.client_email }}</strong>
+          </p>
+          
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <strong>Invoice #:</strong><br>
+              {{ data.invoice_number }}
+            </div>
+            <div class="col-md-6">
+              <strong>Client:</strong><br>
+              {{ data.client_name }}
+            </div>
+          </div>
+          
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <strong>Total Amount:</strong><br>
+              ${{ "{:,.2f}".format(data.total|float) }}
+            </div>
+            <div class="col-md-6">
+              <strong>Items:</strong><br>
+              {{ data.invoice_items|length }} item(s)
+            </div>
+          </div>
+          
+          <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{{ url_for('advanced_invoice.advanced_form') }}" class="btn btn-primary">
+              <i class="fas fa-plus"></i> Create New Invoice
+            </a>
+            
+            <a href="{{ url_for('invoice.history') }}" class="btn btn-secondary">
+              <i class="fas fa-history"></i> View History
+            </a>
+            
+            <a href="{{ url_for('main.form') }}" class="btn btn-outline-secondary">
+              <i class="fas fa-home"></i> Back to Dashboard
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} 

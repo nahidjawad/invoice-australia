@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Advanced Invoice - {{ invoice_data.invoice_number }}{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <a href="{{ url_for('invoice.history') }}" class="btn btn-secondary mb-3">← History</a>
+</div>
+<div class="container-fluid text-dark-emphasis">
+  <h1 class="text-center mb-4">Advanced Tax Invoice</h1>
+
+  <div style="display: table; width: 100%; margin-bottom: 2rem;">
+  <div style="display: table-row;">
+    <!-- Left column -->
+    <div style="display: table-cell; width: 50%; vertical-align: top;">
+      <p><strong>{{ invoice_data.sender_name }}</strong></p>
+      {% if invoice_data.sender_abn %}
+      <p>ABN: {{ invoice_data.sender_abn }}</p>
+      {% endif %}
+      <p>Invoice #: {{ invoice_data.invoice_number }}</p>
+      <p>Date of Issue: {{ invoice_data.formatted_date }}</p>
+    </div>
+
+    <!-- Right column -->
+    <div style="display: table-cell; width: 50%; vertical-align: top; text-align: right;">
+      <p><strong>Customer Name: </strong>{{ invoice_data.client_name }}</p>
+      <p><strong>Status: </strong><span class="badge {% if invoice.status == 'Paid' %}bg-success{% else %}bg-warning text-dark{% endif %}">{{ invoice.status }}</span></p>
+    </div>
+  </div>
+  </div>
+
+  <table class="table table-bordered table-light table-hover">
+  <thead>
+    <tr>
+      <th>Description</th>
+      <th>Quantity</th>
+      <th>Rate (AUD)</th>
+      <th>Total (AUD)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in invoice_data.invoice_items %}
+    <tr>
+      <td>{{ item.description }}</td>
+      <td>{{ item.quantity }}</td>
+      <td>${{ "{:,.2f}".format(item.rate|float) }}</td>
+      <td>${{ "{:,.2f}".format(item.total|float) }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  </table>
+
+  {% if invoice_data.include_gst %}
+  <small class="text-body-secondary fst-italic">Total amount includes 10% GST</small>
+  {% endif %}
+
+  <div class="totals">
+    <table class="table table-bordered table-light table-hover">
+      <tr class="text-end">
+        <td><strong>Subtotal (AUD)</strong></td>
+        <td><strong>${{ "{:,.2f}".format(invoice_data.subtotal|float) }}</strong></td>
+      </tr>
+      {% if invoice_data.include_gst %}
+      <tr class="text-end">
+        <td><strong>GST (10%)</strong></td>
+        <td><strong>${{ "{:,.2f}".format(invoice_data.gst_amount|float) }}</strong></td>
+      </tr>
+      {% endif %}
+      <tr class="text-end">
+        <td><strong>Grand Total (AUD)</strong></td>
+        <td><strong>${{ "{:,.2f}".format(invoice_data.total|float) }}</strong></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="d-flex justify-content-center">
+    <!-- Editable Email -->
+    <form id="invoice-actions-form" method="POST">
+      <div class="mb-3">
+        <label>Email</label>
+        <input type="email" name="client_email" class="form-control" value="{{ invoice_data.client_email }}" required>
+      </div>
+
+      <!-- Hidden fields with invoice data -->
+      <input type="hidden" name="invoice_number" value="{{ invoice_data.invoice_number }}">
+      <input type="hidden" name="date" value="{{ invoice_data.date }}">
+      <input type="hidden" name="client_name" value="{{ invoice_data.client_name }}">
+      <input type="hidden" name="sender_type" value="{{ 'company' if invoice_data.use_company else 'personal' }}">
+      
+      {% if invoice_data.use_company %}
+      <input type="hidden" name="company_id" value="{{ invoice_data.company_id }}">
+      {% else %}
+      <input type="hidden" name="your_name" value="{{ invoice_data.your_name }}">
+      <input type="hidden" name="abn" value="{{ invoice_data.abn }}">
+      {% endif %}
+      
+      <input type="hidden" name="include_gst" value="{{ 'on' if invoice_data.include_gst else 'off' }}">
+      <input type="hidden" name="review" value="true">
+      
+      {% for item in invoice_data.invoice_items %}
+      <input type="hidden" name="items[{{ loop.index0 }}][description]" value="{{ item.description }}">
+      <input type="hidden" name="items[{{ loop.index0 }}][quantity]" value="{{ item.quantity }}">
+      <input type="hidden" name="items[{{ loop.index0 }}][rate]" value="{{ item.rate }}">
+      {% endfor %}
+
+      <!-- Buttons -->
+      <button type="submit" formaction="{{ url_for('invoice.download') }}" class="btn btn-success">Download PDF</button>
+      <button type="submit" formaction="{{ url_for('invoice.email_invoice') }}" class="btn btn-primary" id="email-btn">
+        <span id="email-text">Resend Email</span>
+        <span id="email-spinner" class="spinner-border spinner-border-sm ms-2" style="display: none;" role="status">
+          <span class="visually-hidden">Sending...</span>
+        </span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+document.getElementById('invoice-actions-form').addEventListener('submit', function(e) {
+  const formAction = e.submitter.getAttribute('formaction');
+  
+  // Only show spinner for email action
+  if (formAction && formAction.includes('email_invoice')) {
+    const emailBtn = document.getElementById('email-btn');
+    const emailText = document.getElementById('email-text');
+    const emailSpinner = document.getElementById('email-spinner');
+    
+    // Disable button and show spinner
+    emailBtn.disabled = true;
+    emailText.textContent = 'Sending Email...';
+    emailSpinner.style.display = 'inline-block';
+  }
+});
+</script>
+{% endblock %} 

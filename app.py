@@ -13,7 +13,7 @@ from config import config
 from extensions import init_extensions, db
 from flask_migrate import Migrate
 from models import User, Invoice
-from routes import main, invoice, stripe_bp
+from routes import main, invoice, advanced_invoice, stripe_bp
 from auth import auth
 from user import user 
 from company import company_bp  # <-- Add this import
@@ -34,6 +34,7 @@ def create_app(config_name=None):
     app.register_blueprint(main)
     app.register_blueprint(auth)
     app.register_blueprint(invoice, url_prefix='/invoice')
+    app.register_blueprint(advanced_invoice, url_prefix='/advanced-invoice')
     app.register_blueprint(stripe_bp, url_prefix='/stripe')
     app.register_blueprint(user) 
     app.register_blueprint(company_bp)  # <-- Register the company blueprint

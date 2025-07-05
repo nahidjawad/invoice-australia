@@ -60,8 +60,26 @@ class InvoiceProcessor:
         os.makedirs('output', exist_ok=True)
         pdf_path = os.path.join('output', filename)
         
+        # Options for server environment
+        options = {
+            'page-size': 'A4',
+            'margin-top': '0.75in',
+            'margin-right': '0.75in',
+            'margin-bottom': '0.75in',
+            'margin-left': '0.75in',
+            'encoding': "UTF-8",
+            'no-outline': None,
+            'enable-local-file-access': None,
+            'disable-smart-shrinking': None,
+            'print-media-type': None,
+            'no-images': None,  # Disable images to avoid network issues
+            'disable-javascript': None,
+            'disable-external-links': None,
+            'disable-internal-links': None
+        }
+        
         try:
-            pdfkit.from_string(html_content, pdf_path, configuration=config)
+            pdfkit.from_string(html_content, pdf_path, configuration=config, options=options)
             return pdf_path
         except Exception as e:
             raise RuntimeError(f"Failed to create PDF: {e}")
@@ -94,6 +112,16 @@ class SessionManager:
     def get_invoice_data() -> Optional[Dict[str, Any]]:
         """Get stored invoice data from session"""
         return session.get("last_invoice_data")
+    
+    @staticmethod
+    def store_advanced_invoice_data(data: Dict[str, Any]) -> None:
+        """Store advanced invoice data in session for preview/edit"""
+        session["last_advanced_invoice_data"] = data
+    
+    @staticmethod
+    def get_advanced_invoice_data() -> Optional[Dict[str, Any]]:
+        """Get stored advanced invoice data from session"""
+        return session.get("last_advanced_invoice_data")
 
 class EmailValidator:
     """Email validation utilities"""

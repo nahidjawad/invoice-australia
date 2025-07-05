@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Advanced Invoice Preview{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-8">
+      <h2 class="mb-4">Advanced Invoice Preview</h2>
+      
+      <!-- Invoice Preview -->
+      <div class="card">
+        <div class="card-body">
+          {{ invoice_html | safe }}
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Actions</h5>
+        </div>
+        <div class="card-body">
+          <!-- Download PDF -->
+          <form method="POST" action="{{ url_for('advanced_invoice.advanced_download') }}" class="mb-3">
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="fas fa-download"></i> Download PDF
+            </button>
+          </form>
+          
+          <!-- Email Invoice -->
+          <form method="POST" action="{{ url_for('advanced_invoice.advanced_email') }}" class="mb-3">
+            <button type="submit" class="btn btn-success w-100">
+              <i class="fas fa-envelope"></i> Email to Client
+            </button>
+          </form>
+          
+          <!-- Edit Invoice -->
+          <a href="{{ url_for('advanced_invoice.advanced_edit') }}" class="btn btn-secondary w-100 mb-3">
+            <i class="fas fa-edit"></i> Edit Invoice
+          </a>
+          
+          <!-- Back to Dashboard -->
+          <a href="{{ url_for('main.form') }}" class="btn btn-outline-secondary w-100">
+            <i class="fas fa-home"></i> Back to Dashboard
+          </a>
+        </div>
+      </div>
+      
+      <!-- Invoice Summary -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h6 class="mb-0">Invoice Summary</h6>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-6">
+              <strong>Invoice #:</strong><br>
+              <strong>Date:</strong><br>
+              <strong>Client:</strong><br>
+              <strong>Items:</strong><br>
+              <strong>Subtotal:</strong><br>
+              {% if data.include_gst %}
+              <strong>GST:</strong><br>
+              {% endif %}
+              <strong>Total:</strong>
+            </div>
+            <div class="col-6 text-end">
+              {{ data.invoice_number }}<br>
+              {{ data.formatted_date }}<br>
+              {{ data.client_name }}<br>
+              {{ data.invoice_items|length }} item(s)<br>
+              ${{ "{:,.2f}".format(data.subtotal|float) }}<br>
+              {% if data.include_gst %}
+              ${{ "{:,.2f}".format(data.gst_amount|float) }}<br>
+              {% endif %}
+              <strong>${{ "{:,.2f}".format(data.total|float) }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} 

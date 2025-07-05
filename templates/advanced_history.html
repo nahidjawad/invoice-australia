@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Advanced Invoice History{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Advanced Invoice History</h2>
+    <a href="{{ url_for('advanced_invoice.advanced_form') }}" class="btn btn-primary">
+      <i class="fas fa-plus"></i> Create New Advanced Invoice
+    </a>
+  </div>
+
+  {% if invoices %}
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Invoice #</th>
+              <th>Date</th>
+              <th>Client</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for invoice in invoices %}
+            <tr>
+              <td>
+                <strong>{{ invoice.invoice_number }}</strong>
+              </td>
+              <td>{{ invoice.date.strftime('%d/%m/%Y') }}</td>
+              <td>{{ invoice.client_name }}</td>
+              <td>{{ invoice.items|length }} item(s)</td>
+              <td>
+                <strong>${{ "{:,.2f}".format(invoice.total|float) }}</strong>
+                {% if invoice.include_gst %}
+                <small class="text-muted d-block">incl. GST</small>
+                {% endif %}
+              </td>
+              <td>
+                {% if invoice.status == 'Paid' %}
+                <span class="badge bg-success">Paid</span>
+                {% else %}
+                <span class="badge bg-warning">Unpaid</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="btn-group" role="group">
+                  <a href="{{ url_for('advanced_invoice.view_advanced_invoice', invoice_id=invoice.id) }}" 
+                     class="btn btn-sm btn-outline-primary" title="View">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  
+                  {% if invoice.status != 'Paid' %}
+                  <form method="POST" action="{{ url_for('advanced_invoice.mark_advanced_paid', invoice_id=invoice.id) }}" 
+                        style="display: inline;" onsubmit="return confirm('Mark this invoice as paid?')">
+                    <button type="submit" class="btn btn-sm btn-outline-success" title="Mark as Paid">
+                      <i class="fas fa-check"></i>
+                    </button>
+                  </form>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Summary Statistics -->
+  <div class="row mt-4">
+    <div class="col-md-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">{{ invoices|length }}</h5>
+          <p class="card-text">Total Invoices</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title text-success">{{ invoices|selectattr('status', 'equalto', 'Paid')|list|length }}</h5>
+          <p class="card-text">Paid Invoices</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title text-warning">{{ invoices|selectattr('status', 'equalto', 'Unpaid')|list|length }}</h5>
+          <p class="card-text">Unpaid Invoices</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">${{ "{:,.2f}".format(invoices|sum(attribute='total')) }}</h5>
+          <p class="card-text">Total Value</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  {% else %}
+  <div class="text-center py-5">
+    <i class="fas fa-file-invoice text-muted" style="font-size: 4rem;"></i>
+    <h3 class="mt-3 text-muted">No Advanced Invoices Yet</h3>
+    <p class="text-muted">Create your first advanced invoice to get started!</p>
+    <a href="{{ url_for('advanced_invoice.advanced_form') }}" class="btn btn-primary">
+      <i class="fas fa-plus"></i> Create Advanced Invoice
+    </a>
+  </div>
+  {% endif %}
+  
+  <div class="mt-4">
+    <a href="{{ url_for('main.form') }}" class="btn btn-outline-secondary">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+</div>
+{% endblock %} 

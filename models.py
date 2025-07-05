@@ -82,6 +82,85 @@ class Invoice(db.Model):
     def __repr__(self):
         return f'<Invoice {self.id} for user {self.user_id}>'
 
+class AdvancedInvoiceItem(db.Model):
+    """Individual line items for advanced invoices"""
+    __tablename__ = 'advanced_invoice_items'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    advanced_invoice_id = db.Column(db.Integer, db.ForeignKey('advanced_invoices.id'), nullable=False)
+    description = db.Column(db.String(500), nullable=False)
+    quantity = db.Column(db.Float, nullable=False, default=1.0)
+    rate = db.Column(db.Float, nullable=False)
+    total = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<AdvancedInvoiceItem {self.description} - ${self.total}>'
+
+class AdvancedInvoice(db.Model):
+    """Advanced invoice model with multiple items, GST support, and company selection"""
+    __tablename__ = 'advanced_invoices'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    
+    # Invoice details
+    invoice_number = db.Column(db.String(50), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    include_gst = db.Column(db.Boolean, default=False)
+    subtotal = db.Column(db.Float, nullable=False, default=0.0)
+    gst_amount = db.Column(db.Float, nullable=False, default=0.0)
+    total = db.Column(db.Float, nullable=False, default=0.0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(20), default='Unpaid')
+    
+    # Sender details (either personal or company)
+    use_company = db.Column(db.Boolean, default=False)  # True = use company, False = use personal
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=True)
+    
+    # Personal details (used when use_company = False)
+    your_name = db.Column(db.String(120), nullable=True)
+    abn = db.Column(db.String(20), nullable=True)
+    
+    # Client details
+    client_name = db.Column(db.String(120), nullable=False)
+    client_email = db.Column(db.String(120), nullable=False)
+    
+    # Relationships
+    items = db.relationship("AdvancedInvoiceItem", backref="advanced_invoice", lazy=True, cascade="all, delete-orphan")
+    user = db.relationship("User", backref="advanced_invoices")
+    company = db.relationship("Company", backref="advanced_invoices")
+    
+    def calculate_totals(self):
+        """Calculate subtotal, GST, and total amounts"""
+        self.subtotal = sum(item.total for item in self.items)
+        self.gst_amount = self.subtotal * 0.1 if self.include_gst else 0.0
+        self.total = self.subtotal + self.gst_amount
+    
+    def get_sender_details(self):
+        """Get sender details (either company or personal)"""
+        if self.use_company and self.company:
+            return {
+                'name': self.company.company_name,
+                'abn': self.company.abn,
+                'address': self.company.address,
+                'phone': self.company.phone,
+                'email': self.company.email,
+                'logo_path': self.company.logo_path
+            }
+        else:
+            return {
+                'name': self.your_name,
+                'abn': self.abn,
+                'address': None,
+                'phone': None,
+                'email': None,
+                'logo_path': None
+            }
+    
+    def __repr__(self):
+        return f'<AdvancedInvoice {self.id} for user {self.user_id}>'
+
 class Company(db.Model):
     __tablename__ = 'companies'
     id = db.Column(db.Integer, primary_key=True)

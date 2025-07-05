@@ -72,8 +72,26 @@
       <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
         <button type="submit" class="btn btn-primary px-4">Preview Invoice</button>
         <button type="button" class="btn btn-secondary" onclick="resetForm()">Clear Form</button>
-
       </div>
+      
+      <!-- Advanced Invoice Link -->
+      {% if current_user %}
+      <div class="text-center mt-4">
+        <hr>
+        <p class="text-muted mb-2">Need more features?</p>
+        <a href="{{ url_for('advanced_invoice.advanced_form') }}" class="btn btn-outline-primary">
+          <i class="fas fa-plus"></i> Create Advanced Invoice
+        </a>
+        <small class="d-block text-muted mt-2">
+          Multiple items, company selection, and more
+        </small>
+        <div class="mt-2">
+          <a href="{{ url_for('invoice.history') }}" class="btn btn-link btn-sm">
+            <i class="fas fa-history"></i> View All Invoices
+          </a>
+        </div>
+      </div>
+      {% endif %}
     </form>
   </div>
 {% endblock %}
